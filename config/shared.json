@@ -1,0 +1,26 @@
+{
+	"MINT_MANAGER": {
+		"testnet": {
+			"address": "0x5227adCf5007f2Ec092c422437538000aFa1F94E",
+			"chainName": "staging-legal-crazy-castor",
+			"chainNameHash": "0x000001c6199cc0815ae75bc1bc121710532a69d513421f469f968a202657dd9c"
+		},
+		"mainnet": {
+			"address": "",
+			"chainName": "",
+			"chainNameHash": ""
+		}
+	},
+	"CROSS_CHAIN_RECEIVER": {
+		"testnet": {
+			"address": "",
+			"chainName": "",
+			"chainNameHash": ""
+		},
+		"mainnet": {
+			"address": "",
+			"chainName": "",
+			"chainNameHash": ""
+		}
+	}
+}

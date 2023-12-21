@@ -1,0 +1,38 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/CrossChainReceiver.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.9;\n\nimport { ICrossChain } from \"./interfaces/ICrossChain.sol\";\n\nerror InvalidAction();\nerror InvalidFromChain();\nerror InvalidSender();\n\ncontract CrossChainReceiver {\n\n    // Default Message Proxy\n    address public messageProxy;\n\n    // Contract Address of Manager Contract\n    address public managerContractAddress;\n\n    // Chain Name Hash Where Manager Located\n    bytes32 public managerSchainHash;\n\n    modifier onlyMessageProxy() {\n        require(msg.sender == address(messageProxy), \"Sender is not a MessageProxy\");\n        _;\n    }\n\n    constructor(\n        bytes32 _managerSchainHash,\n        address _managerContractAddress\n    ) {\n        managerSchainHash = _managerSchainHash;\n        managerContractAddress = _managerContractAddress;\n        messageProxy = 0xd2AAa00100000000000000000000000000000000;\n    }\n\n    function postMessage(\n        bytes32 fromSchainHash,\n        address sender,\n        bytes calldata data\n    ) \n        external\n        onlyMessageProxy\n    {   \n\n        if (fromSchainHash != managerSchainHash) revert InvalidFromChain();\n        if (sender != managerContractAddress) revert InvalidSender();\n\n        bytes1 action = abi.decode(\n            data,\n            (bytes1)\n        );\n\n        if (action == 0x0) {\n            (,address to, address destinationContractAddress) = abi.decode(data, (bytes1, address, address));\n            ICrossChain(destinationContractAddress).mintTo(to);\n        } else if (action == 0x01) {\n            (,address to, address destinationContractAddress, uint256 tokenId) = abi.decode(data, (bytes1, address, address, uint256));\n            ICrossChain(destinationContractAddress).mintTo(to, tokenId);\n        } else if (action == 0x02) {\n            (, address to, address destinationContractAddress, uint256 tokenId, uint256 amount) = abi.decode(data, (bytes1, address, address, uint256, uint256));\n            ICrossChain(destinationContractAddress).mintTo(to, tokenId, amount);\n        } else {\n           revert InvalidAction(); \n        }\n    }\n}\n"
+    },
+    "contracts/interfaces/ICrossChain.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.19;\n\ninterface ICrossChain {\n    function mintTo(address to) external;\n    function mintTo(address to, uint256 tokenId) external;\n    function mintTo(address to, uint256 tokenId, uint256 amount) external;\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
